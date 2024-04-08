@@ -54,7 +54,7 @@ def return_dNf(t, f, theta, alpha, data):
 
 
 def return_lambda(alpha, mu, nf, ext):
-    return mu * ext + np.dot(alpha, nf)
+    return mu * (ext+eps) + np.dot(alpha, nf)
 
 
 def return_gradient_of_lambda_p(p, t, alpha, mu, nf, dnf, ext, data):
@@ -97,7 +97,7 @@ def return_likelihood_and_gradient(
         nf = return_Nf(t, f, theta, data)
         dnf = return_dNf(t, f, theta, alpha, data)
         lambda_total = return_lambda(alpha, mu, nf, ext)
-
+        
         for p in range(P):
             n_pt = np.sum(data[p, t, :])
             # can play around with scaling factors here
@@ -301,7 +301,8 @@ def run_optimization_many_sequences_given_starting_point(
     time_start = perf_counter()
 
     lb = [0] * (P) + [0] * (P * P + 1)
-    ub = [1e6] * (P) + [1, 1e6, 1e6, 1] + [1]
+    #ub = [1e6] * (P) + [1, 1e6, 1e6, 1] + [1]
+    ub = [1e6] * (P) + [1] * (P * P + 1)
 
     cl = []
     cu = []
@@ -335,7 +336,7 @@ def run_optimization_many_sequences_given_starting_point(
     # nlp.addOption("acceptable_compl_inf_tol", 100.)
     nlp.addOption("acceptable_iter", 10)
     nlp.addOption("print_level", 0)
-    nlp.addOption("max_iter", 1)
+    nlp.addOption("max_iter", 100)
     # nlp.addOption("accept_after_max_steps", 2)
 
     x_opt, info = nlp.solve(p0)

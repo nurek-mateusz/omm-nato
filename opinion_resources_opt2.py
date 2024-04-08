@@ -12,10 +12,9 @@ eps = 1e-9
 
 
 def filter_on_i(i, K):
-    # filtering matrix. if i=0,1 -> k=0; i=2,3 -> k=1, etc.
-    filt = np.zeros(K)
-    filt[i // 2] = 1
-    filt[int((i // 2) + (K / 2))] = 1
+    filt = np.ones(K)
+    # filt = np.zeros(K)
+    # filt[i] = 1
     return filt
 
 
@@ -56,7 +55,7 @@ def return_Xf(t, f, theta, X):
 def return_lambda_indpt(alpha, mu, mu_hat, nf, ext):
     # for the first, term, multiply first entry of mu to first row of mu_hat, second entry of
     # mu to second row of mu_hat
-    return ((mu_hat.T * mu).T) * ext + np.dot(alpha, nf)
+    return ((mu_hat.T * mu).T) * (ext + eps) + np.dot(alpha, nf)
 
 
 def return_T(t, gamma, beta, lambda_indpt, xf, N_mean, N_scale, X_mean, X_scale):
@@ -120,8 +119,7 @@ def return_gradient_of_T_p_i_wrt_gamma(i, p, t, gamma, xf, X_mean, X_scale):
     K = gamma.shape[2]
 
     for k in range(K):
-        if (k == i // 2) or (k == int((i // 2) + (K / 2))):  # nonzero only if k==i//2
-            collector[p, i, k] = (xf[k] - X_mean[k]) / X_scale[k]
+        collector[p, i, k] = (xf[k] - X_mean[k]) / X_scale[k]
     return collector.reshape(-1)
 
 
@@ -194,6 +192,7 @@ def return_likelihood_and_gradient(
     gradient = np.zeros(
         shape=len(mu_hat.reshape(-1)) + len(gamma.reshape(-1)) + len(beta.reshape(-1))
     )
+
     for t in range(data.shape[1]):
         prev = log_likelihood
         ext = S[t]
@@ -221,7 +220,7 @@ def return_likelihood_and_gradient(
 
                 mod_part = np.sum(
                     [
-                        (np.int(i == j) - s[p, j])
+                        (int(i == j) - s[p, j])
                         * return_gradient_of_T_p_i(
                             j,
                             p,
@@ -504,7 +503,7 @@ def run_optimization_many_sequences_given_starting_point(
     nlp.addOption("acceptable_compl_inf_tol", 100.0)
     nlp.addOption("acceptable_iter", 10)
     nlp.addOption("print_level", 0)
-    nlp.addOption("max_iter", 1)
+    nlp.addOption("max_iter", 100)
     # nlp.addOption("accept_after_max_steps", 2)
 
     x_opt, info = nlp.solve(p0)
@@ -519,10 +518,10 @@ def return_random_starting_points(num_points, P, M, K):
 
         a, b = 0, 1
         gamma_bet_units = ((b - a) * prng.random(P * M * K) + a).reshape(P, M, K)
-        for l in range(K):
-            for m in range(M):
-                if (l != m // 2) and (l != int((m // 2) + (K / 2))):
-                    gamma_bet_units[:, m, l] = 0
+        # for l in range(K):
+        #     for m in range(M):
+        #         if (l != m // 2) and (l != int((m // 2) + (K / 2))):
+        #             gamma_bet_units[:, m, l] = 0
         gamma_bet_units = gamma_bet_units.reshape(-1)
         beta_bet_units = (b - a) * prng.random(P * P * M * M) + a
 

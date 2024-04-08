@@ -39,6 +39,7 @@ def perform_two_level_analysis(
     how_many_prediction_samples,
     logfit_label,
 ):
+    print('[START] fit lvl 1')
     # fit level 1 model
     res_opt1 = run_opt1(
         p0_opt1,
@@ -51,11 +52,13 @@ def perform_two_level_analysis(
         how_many_samples,
         logfit_label,
     )
+    print('[END] fit lvl 1')
 
     mu = res_opt1[0][:P]
     alpha = res_opt1[0][P : P + P * P].reshape(P, P)
     theta = res_opt1[0][-1]
 
+    print('[START] fit lvl 2')
     # fit level 2 model
     res_opt2 = run_opt2(
         p0_opt2,
@@ -74,6 +77,7 @@ def perform_two_level_analysis(
         how_many_samples,
         logfit_label,
     )
+    print('[END] fit lvl 2')
 
     mu = res_opt1[0][:P]
     alpha = res_opt1[0][P : P + P * P]
@@ -114,10 +118,10 @@ def perform_two_level_analysis(
     try:
         # calculate X elasticities
         X_elasticities = get_X_elasticities(
-            gamma[:, [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11], :],
+            gamma[:, [0, 1, 2], :],
             np.std(X, axis=1),
             np.mean(xf, axis=-1),
-            np.mean(s, axis=-1)[:, [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11], :],
+            np.mean(s, axis=-1)[:, [0, 1, 2], :],
             P,
             M,
             K,
@@ -126,31 +130,31 @@ def perform_two_level_analysis(
 
         rr = pd.DataFrame(beta[0, 0])
         beta[0, 0] = rr.loc[
-            [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11],
-            [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11],
+            [0, 1, 2],
+            [0, 1, 2],
         ]
         rr = pd.DataFrame(beta[0, 1])
         beta[0, 1] = rr.loc[
-            [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11],
-            [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11],
+            [0, 1, 2],
+            [0, 1, 2],
         ]
         rr = pd.DataFrame(beta[1, 0])
         beta[1, 0] = rr.loc[
-            [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11],
-            [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11],
+            [0, 1, 2],
+            [0, 1, 2],
         ]
         rr = pd.DataFrame(beta[1, 1])
         beta[1, 1] = rr.loc[
-            [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11],
-            [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11],
+            [0, 1, 2],
+            [0, 1, 2],
         ]
 
         # calculate L elasticities
         L_elasticities = get_lambda_elasticities(
             beta,
-            N_scale[:, [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11]],
-            np.mean(lindpt, axis=-1)[:, [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11], :],
-            np.mean(s, axis=-1)[:, [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11], :],
+            N_scale[:, [0, 1, 2]],
+            np.mean(lindpt, axis=-1)[:, [0, 1, 2], :],
+            np.mean(s, axis=-1)[:, [0, 1, 2], :],
             P,
             M,
             how_long,
@@ -159,6 +163,7 @@ def perform_two_level_analysis(
         X_elasticities = np.nan
         L_elasticities = np.nan
 
+    print('[START] what if')
     # GET AVERAGE OPINION SHARES ON TEST (FOLLOWING THE WHAT IF ANALYSIS IN MAIN TEXT)
     to_vary2 = [-0.5, -0.25, -0.1, -0.05, 0, 0.05, 0.1, 0.25, 0.5]
     # mean on train period
@@ -191,7 +196,7 @@ def perform_two_level_analysis(
         except:
             av_dist_on_test = np.nan
         av_dist_on_test_over_K.append(av_dist_on_test)
-
+    print('[END] what if')
     return [
         xopt,
         res_opt1,

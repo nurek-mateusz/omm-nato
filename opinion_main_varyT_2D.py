@@ -23,22 +23,23 @@ max_workers = 48
 eps = 1e-9
 how_many_prediction_samples = 5
 
-P = 2  # number of platforms
-M = 12  # number of opinions on each platform
-K = 12  # number of interventions
+P = 1  # number of platforms
+M = 3  # number of opinions on each platform
+K = 3  # number of interventions
 
 # load sample dataset
 samples = pickle.load(
-    open("samples/us_and_au_reducedopinionset_hourly_farright.p", "rb")
+    open("data/nato_tweets.p", "rb")
 )
 
 # load exogenous signal
-S = pickle.load(open("samples/googletrends.p", "rb"))
+S = pickle.load(open("data/nato_googletrends.p", "rb"))
 S = np.concatenate([[x] * 24 for x in S])
 
 # load interventions
-X = pickle.load(open("samples/RELIABLE_UNRELIABLE_K12.p", "rb"))
+X = pickle.load(open("data/nato_news.p", "rb"))
 X = X[list(range(K)), :].astype(float)
+X = np.repeat(X, 24, axis=1)
 
 regularization_list = list(
     product(
@@ -49,8 +50,8 @@ regularization_list = list(
 
 # training interval, 75 days x 24 hours
 T_list = [75 * 24]
-# test interval, 90 days x 24 hours
-T_test_list = [90 * 24]
+# test interval, 91 days x 24 hours
+T_test_list = [91 * 24]
 
 
 def main():
@@ -143,7 +144,7 @@ def main():
 
     pickle.dump(
         [sim_output_collector, fit_duration_collector],
-        open(f"hypertuning/T{T_index}_h.p", "wb"),
+        open(f"hypertuning/T{T_index}_h_nato.p", "wb"),
     )
 
 
