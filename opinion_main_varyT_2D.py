@@ -18,7 +18,7 @@ from opinion_resources_twolevel import perform_two_level_analysis
 t_start = perf_counter()
 
 how_many_samples = 1
-num_starting_points = 3
+num_starting_points = 10
 max_workers = 48
 eps = 1e-9
 how_many_prediction_samples = 5

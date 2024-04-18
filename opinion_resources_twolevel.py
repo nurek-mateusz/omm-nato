@@ -133,21 +133,6 @@ def perform_two_level_analysis(
             [0, 1, 2],
             [0, 1, 2],
         ]
-        rr = pd.DataFrame(beta[0, 1])
-        beta[0, 1] = rr.loc[
-            [0, 1, 2],
-            [0, 1, 2],
-        ]
-        rr = pd.DataFrame(beta[1, 0])
-        beta[1, 0] = rr.loc[
-            [0, 1, 2],
-            [0, 1, 2],
-        ]
-        rr = pd.DataFrame(beta[1, 1])
-        beta[1, 1] = rr.loc[
-            [0, 1, 2],
-            [0, 1, 2],
-        ]
 
         # calculate L elasticities
         L_elasticities = get_lambda_elasticities(
