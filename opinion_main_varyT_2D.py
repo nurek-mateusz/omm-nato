@@ -18,10 +18,10 @@ from opinion_resources_twolevel import perform_two_level_analysis
 t_start = perf_counter()
 
 how_many_samples = 1
-num_starting_points = 10
+num_starting_points = 3
 max_workers = 48
 eps = 1e-9
-how_many_prediction_samples = 5
+how_many_prediction_samples = 50
 
 P = 1  # number of platforms
 M = 3  # number of opinions on each platform
@@ -56,10 +56,16 @@ T_test_list = [91 * 24]
 
 def main():
 
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         sys.exit()
     try:
         T_index = int(sys.argv[1])
+        mode = sys.argv[2]
+        
+        # f - only fit
+        # w - only what-if
+        if mode not in ['f', 'w']:
+            sys.exit()
     except:
         print("One of your arguments was not an integer.")
         sys.exit()
@@ -134,6 +140,7 @@ def main():
             r_howmanysamples,
             r_howmanypredictionsamples,
             r_logfitlabel,
+            mode,
         )
 
     sim_outputs = list(sim_outputs)
@@ -144,7 +151,7 @@ def main():
 
     pickle.dump(
         [sim_output_collector, fit_duration_collector],
-        open(f"hypertuning/T{T_index}_h_nato.p", "wb"),
+        open(f"hypertuning/T{T_index}_h_nato_reg_1_50.p", "wb"),
     )
 
 
