@@ -12,7 +12,7 @@ eps = 1e-9
 
 
 def filter_on_i(i, K):
-    filt = np.zeros(K)
+    filt = np.ones(K)
     # filt = np.zeros(K)
     # filt[i] = 1
     return filt

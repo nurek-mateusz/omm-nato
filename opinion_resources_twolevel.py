@@ -150,11 +150,11 @@ def perform_two_level_analysis(
 
     print('[START] what if')
     # GET AVERAGE OPINION SHARES ON TEST (FOLLOWING THE WHAT IF ANALYSIS IN MAIN TEXT)
-    to_vary2 = [-0.5, -0.25, -0.1, -0.05, 0, 0.05, 0.1, 0.25, 0.5]
+    to_vary2 = [-1.0, -0.5, -0.25, -0.1, -0.05, 0, 0.05, 0.1, 0.25, 0.5, 1.0]
     # mean on train period
     mean_vals = X[:, :how_long].mean(axis=1)
     n_list = [mean_vals * x for x in to_vary2]
-    num_samples_for_perc_inc = 5
+    num_samples_for_perc_inc = 50
 
     av_dist_on_test_over_K = []
     for k in range(K):
