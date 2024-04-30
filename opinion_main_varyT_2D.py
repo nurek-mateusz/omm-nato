@@ -64,7 +64,8 @@ def main():
         
         # 1 - fit level one
         # 2 - fit level two
-        # 3 what if interventions
+        # 3 - what if interventions
+        # 4 - all
         if mode not in [1, 2, 3]:
             sys.exit()
     except:
@@ -192,6 +193,40 @@ def main():
         pickle.dump(
             [sim_outputs, fit_duration],
             open("hypertuning/what_if.p", "wb"),
+        )
+    elif mode == 4:
+        sim_output_collector = []
+        fit_duration_collector = []
+    
+        with ProcessPoolExecutor(max_workers=max_workers) as executor:
+            sim_outputs = executor.map(
+                perform_two_level_analysis,
+                r_opt_1_x0,
+                r_opt_2_x0,
+                r_samples,
+                r_X,
+                r_S,
+                r_regularization,
+                r_timeaveraged,
+                r_P,
+                r_M,
+                r_K,
+                r_howlong,
+                r_howlongtest,
+                r_howmanysamples,
+                r_howmanypredictionsamples,
+                r_logfitlabel,
+            )
+
+        sim_outputs = list(sim_outputs)
+        fit_duration = perf_counter() - t_start
+
+        sim_output_collector.append(sim_outputs)
+        fit_duration_collector.append(fit_duration)
+
+        pickle.dump(
+            [sim_output_collector, fit_duration_collector],
+            open(f"hypertuning/all_nato.p", "wb"),
         )
 
 
